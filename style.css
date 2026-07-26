@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
 
 :root {
-  --primary: #ff6b6b; /* Vibrant Coral/Pink */
-  --secondary: #4ecdc4; /* Mint Green */
-  --bg-gradient: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-  --card-bg: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
-  --text: #2d3436;
+  --primary: #ff4757;
+  --secondary: #1e90ff;
+  --text: #2f3542;
 }
 
+/* 1. ANIMATED COLOR SHIFTING BACKGROUND */
 body {
-  font-family: 'Fredoka', sans-serif; /* Playful, rounded font */
-  background: var(--bg-gradient);
-  background-attachment: fixed;
+  font-family: 'Fredoka', sans-serif;
+  background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb, #ffb199);
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease infinite;
   color: var(--text);
   margin: 0;
   padding: 40px 20px;
@@ -19,22 +19,49 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 90vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 2. FLOATING EMOJI BACKGROUND LAYER */
+body::before {
+  content: "🤪 😂 🍕 💀 🤡 👽 🦄 🔥 💅 👻 🤡 💀 🤪 🍕 👽";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  font-size: 5rem;
+  line-height: 2;
+  opacity: 0.15; /* Keeps it faint so it doesn't ruin readability */
+  z-index: -1;
+  pointer-events: none;
+  word-wrap: break-word;
+  text-align: center;
+}
+
+/* 3. GLASSMORPHISM CONTAINER WITH FUN BORDER */
 .container {
   max-width: 550px;
   width: 100%;
-  background: var(--card-bg);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
   padding: 40px 30px;
   border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  border: 4px solid white;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  border: 5px dashed var(--primary);
 }
 
 h1, h2 {
   text-align: center;
   color: var(--primary);
-  text-shadow: 2px 2px 0px #ffeaa7; /* Fun yellow shadow */
+  text-shadow: 2px 2px 0px #ffeaa7;
   font-size: 2.2rem;
   margin-top: 0;
 }
@@ -45,6 +72,15 @@ p {
   text-align: center;
 }
 
+/* FUNNY IMAGES CLASS */
+.funny-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  margin: 15px 0;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
 .form-group {
   margin-bottom: 24px;
 }
@@ -53,7 +89,6 @@ label {
   display: block;
   font-weight: 600;
   margin-bottom: 8px;
-  color: #636e72;
 }
 
 input[type="text"] {
@@ -64,20 +99,19 @@ input[type="text"] {
   font-size: 16px;
   font-family: 'Fredoka', sans-serif;
   box-sizing: border-box;
-  transition: all 0.3s ease;
 }
 
 input[type="text"]:focus {
   border-color: var(--secondary);
   outline: none;
-  box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.2);
+  box-shadow: 0 0 0 4px rgba(30, 144, 255, 0.2);
 }
 
 .btn {
   display: block;
   width: 100%;
   padding: 16px;
-  background: linear-gradient(45deg, var(--primary), #ff8787);
+  background: linear-gradient(45deg, var(--primary), #ff7f50);
   color: white;
   border: none;
   border-radius: 12px;
@@ -88,17 +122,26 @@ input[type="text"]:focus {
   text-align: center;
   text-decoration: none;
   box-sizing: border-box;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
-  box-shadow: 0 8px 15px rgba(255, 107, 107, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn:hover {
-  transform: translateY(-4px) scale(1.02); /* Bouncy hover effect */
-  box-shadow: 0 12px 20px rgba(255, 107, 107, 0.6);
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 12px 20px rgba(255, 71, 87, 0.4);
 }
 
+.scoreboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.scoreboard-table th, .scoreboard-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 2px solid #f1f2f6;
+}
 .share-box {
-  background: #f8f9fa;
+  background: #f1f2f6;
   padding: 15px;
   border: 3px dashed var(--secondary);
   border-radius: 12px;
@@ -109,49 +152,4 @@ input[type="text"]:focus {
   color: var(--primary);
   margin: 20px 0;
   text-align: center;
-}
-
-.scoreboard-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 8px;
-  margin-top: 20px;
-}
-
-.scoreboard-table th {
-  padding: 12px;
-  text-align: left;
-  background: #f1f3f5;
-  color: #636e72;
-}
-
-.scoreboard-table td {
-  padding: 15px 12px;
-  background: white;
-  border-top: 2px solid #f1f3f5;
-  border-bottom: 2px solid #f1f3f5;
-}
-
-.scoreboard-table tr td:first-child {
-  border-left: 2px solid #f1f3f5;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-}
-
-.scoreboard-table tr td:last-child {
-  border-right: 2px solid #f1f3f5;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  font-weight: bold;
-  color: var(--secondary);
-}
-
-.flash {
-  padding: 15px;
-  background-color: #ffcccc;
-  color: #d63031;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  border-left: 5px solid #d63031;
-  font-weight: bold;
 }
