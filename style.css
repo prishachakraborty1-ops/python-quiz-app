@@ -1,32 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+
 :root {
-  --primary: #6c5ce7;
-  --primary-hover: #5b4bc4;
-  --bg: #f8f9fa;
-  --card-bg: #ffffff;
+  --primary: #ff6b6b; /* Vibrant Coral/Pink */
+  --secondary: #4ecdc4; /* Mint Green */
+  --bg-gradient: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  --card-bg: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
   --text: #2d3436;
-  --border: #e9ecef;
 }
 
 body {
-  font-family: 'Fredoka', sans-serif;
+  font-family: 'Fredoka', sans-serif; /* Playful, rounded font */
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text);
+  margin: 0;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
 }
 
 .container {
   max-width: 550px;
-  margin: 30px auto;
+  width: 100%;
   background: var(--card-bg);
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 40px 30px;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border: 4px solid white;
 }
 
 h1, h2 {
   text-align: center;
   color: var(--primary);
+  text-shadow: 2px 2px 0px #ffeaa7; /* Fun yellow shadow */
+  font-size: 2.2rem;
+  margin-top: 0;
 }
 
 p {
-  line-height: 1.5;
+  line-height: 1.6;
+  font-size: 1.1rem;
+  text-align: center;
 }
 
 .form-group {
@@ -36,97 +52,106 @@ p {
 label {
   display: block;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  color: #636e72;
 }
 
 input[type="text"] {
   width: 100%;
-  padding: 12px;
-  border: 2px solid var(--border);
-  border-radius: 8px;
+  padding: 14px;
+  border: 3px solid #dfe6e9;
+  border-radius: 12px;
   font-size: 16px;
+  font-family: 'Fredoka', sans-serif;
   box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
-.options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.option-btn {
-  display: block;
-  position: relative;
-}
-
-.option-btn input {
-  position: absolute;
-  opacity: 0;
-}
-
-.option-btn span {
-  display: block;
-  padding: 12px;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 14px;
-}
-
-.option-btn input:checked + span {
-  border-color: var(--primary);
-  background-color: #f0edff;
-  color: var(--primary);
-  font-weight: bold;
+input[type="text"]:focus {
+  border-color: var(--secondary);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.2);
 }
 
 .btn {
   display: block;
   width: 100%;
-  padding: 14px;
-  background-color: var(--primary);
+  padding: 16px;
+  background: linear-gradient(45deg, var(--primary), #ff8787);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 12px;
+  font-size: 1.2rem;
   font-weight: bold;
+  font-family: inherit;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
   box-sizing: border-box;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+  box-shadow: 0 8px 15px rgba(255, 107, 107, 0.4);
 }
 
 .btn:hover {
-  background-color: var(--primary-hover);
+  transform: translateY(-4px) scale(1.02); /* Bouncy hover effect */
+  box-shadow: 0 12px 20px rgba(255, 107, 107, 0.6);
 }
 
 .share-box {
-  background: #f1f3f5;
-  padding: 12px;
-  border-radius: 8px;
+  background: #f8f9fa;
+  padding: 15px;
+  border: 3px dashed var(--secondary);
+  border-radius: 12px;
   word-break: break-all;
   font-family: monospace;
-  margin: 15px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--primary);
+  margin: 20px 0;
+  text-align: center;
 }
 
 .scoreboard-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 8px;
   margin-top: 20px;
 }
 
-.scoreboard-table th, .scoreboard-table td {
+.scoreboard-table th {
   padding: 12px;
   text-align: left;
-  border-bottom: 1px solid var(--border);
+  background: #f1f3f5;
+  color: #636e72;
+}
+
+.scoreboard-table td {
+  padding: 15px 12px;
+  background: white;
+  border-top: 2px solid #f1f3f5;
+  border-bottom: 2px solid #f1f3f5;
+}
+
+.scoreboard-table tr td:first-child {
+  border-left: 2px solid #f1f3f5;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.scoreboard-table tr td:last-child {
+  border-right: 2px solid #f1f3f5;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  font-weight: bold;
+  color: var(--secondary);
 }
 
 .flash {
-  padding: 12px;
-  background-color: #ffe3e3;
-  color: #e03131;
-  border-radius: 8px;
+  padding: 15px;
+  background-color: #ffcccc;
+  color: #d63031;
+  border-radius: 12px;
   margin-bottom: 20px;
+  border-left: 5px solid #d63031;
+  font-weight: bold;
 }
