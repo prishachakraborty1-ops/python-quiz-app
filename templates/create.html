@@ -3,21 +3,25 @@
   <h2>Create Your Quiz 📝</h2>
   <form method="POST">
     <div class="form-group">
-      <label>Your Name (The Main Character)</label>
+      <label>Your Name (The Main Character) 👑</label>
       <input type="text" name="creator_name" placeholder="e.g., The coolest person alive" required>
     </div>
 
     <p style="background: #e7f5ff; padding: 12px; border-radius: 8px; color: #1c7ed6; font-weight: bold;">
-      Write up to 10 questions about yourself (minimum 3 required)! 
+      Write up to 10 questions to test your friends' loyalty (minimum 3 required)! 
     </p>
 
     {% for i in range(1, 11) %}
       <div class="form-group" style="background: #f8f9fa; padding: 20px; border-radius: 16px; border: 2px solid #e9ecef;">
-        <label>Question {{ i }} {% if i > 3 %}(Optional){% endif %}</label>
-        <input type="text" name="q{{ i }}_text" placeholder="e.g., How long would I survive in a zombie apocalypse?" {% if i <= 3 %}required{% endif %}>
+        <label>Question {{ i }} {% if i > 3 %}😴 (Optional){% endif %}</label>
+        <input type="text" name="q{{ i }}_text" 
+               placeholder="{% if i == 1 %}e.g., Who is the smartest person in our group? (Hint: Me){% elif i == 2 %}e.g., What is my biggest toxic trait?{% elif i == 3 %}e.g., Who would I sacrifice first in a horror movie? (Sorry, Shrijit 🏃‍♂️💨){% else %}e.g., What is my go-to order at 2 AM?{% endif %}" 
+               {% if i <= 3 %}required{% endif %}>
         
-        <label style="margin-top: 15px;">The Correct Answer</label>
-        <input type="text" name="q{{ i }}_ans" placeholder="e.g., 5 minutes maximum" {% if i <= 3 %}required{% endif %}>
+        <label style="margin-top: 15px;">The ONLY Correct Answer 🎯</label>
+        <input type="text" name="q{{ i }}_ans" 
+               placeholder="{% if i == 1 %}Me, obviously{% elif i == 2 %}Being too awesome{% elif i == 3 %}Definitely Atreyee{% else %}Spicy ramen{% endif %}" 
+               {% if i <= 3 %}required{% endif %}>
       </div>
     {% endfor %}
 
