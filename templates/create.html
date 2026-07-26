@@ -1,20 +1,26 @@
-<form method="POST">
-  <div class="form-group">
-    <label>Your Name</label>
-    <input type="text" name="creator_name" required>
-  </div>
-
-  <p>Write up to 10 questions about yourself (minimum 3 required)!</p>
-
-  {% for i in range(1, 11) %}
-    <div class="form-group" style="background: #f1f3f5; padding: 15px; border-radius: 8px;">
-      <label>Custom Question {{ i }} {% if i > 3 %}(Optional){% endif %}</label>
-      <input type="text" name="q{{ i }}_text" placeholder="e.g., What is my favorite movie?" {% if i <= 3 %}required{% endif %}>
-      
-      <label style="margin-top: 10px;">The Correct Answer</label>
-      <input type="text" name="q{{ i }}_ans" placeholder="e.g., Inception" {% if i <= 3 %}required{% endif %}>
+{% extends "base.html" %}
+{% block content %}
+  <h2>Create Your Quiz 📝</h2>
+  <form method="POST">
+    <div class="form-group">
+      <label>Your Name (The Main Character)</label>
+      <input type="text" name="creator_name" placeholder="e.g., The coolest person alive" required>
     </div>
-  {% endfor %}
 
-  <button type="submit" class="btn">Create Quiz</button>
-</form>
+    <p style="background: #e7f5ff; padding: 12px; border-radius: 8px; color: #1c7ed6; font-weight: bold;">
+      Write up to 10 questions about yourself (minimum 3 required)! 
+    </p>
+
+    {% for i in range(1, 11) %}
+      <div class="form-group" style="background: #f8f9fa; padding: 20px; border-radius: 16px; border: 2px solid #e9ecef;">
+        <label>Question {{ i }} {% if i > 3 %}(Optional){% endif %}</label>
+        <input type="text" name="q{{ i }}_text" placeholder="e.g., How long would I survive in a zombie apocalypse?" {% if i <= 3 %}required{% endif %}>
+        
+        <label style="margin-top: 15px;">The Correct Answer</label>
+        <input type="text" name="q{{ i }}_ans" placeholder="e.g., 5 minutes maximum" {% if i <= 3 %}required{% endif %}>
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn">Generate My Toxic Quiz Link ✨</button>
+  </form>
+{% endblock %}
