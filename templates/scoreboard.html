@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>🏆 Scoreboard: {{ quiz.creator_name }}'s Quiz</h2>
+
+  {% if recent_friend %}
+    <div class="recent-score-banner">
+      Great job <strong>{{ recent_friend }}</strong>! You scored <strong>{{ recent_score }}</strong> points!
+    </div>
+  {% endif %}
+
+  {% if scores %}
+    <table class="scoreboard-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Name</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in scores %}
+          <tr>
+            <td>#{{ loop.index }}</td>
+            <td><strong>{{ item.friend_name }}</strong></td>
+            <td>{{ item.score }} / {{ item.max_score }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="no-scores-message">No one has taken this quiz yet. Share the link!</p>
+  {% endif %}
+
+  <br>
+  <a href="{{ url_for('index') }}" class="btn">Create Your Own Quiz</a>
+{% endblock %}
