@@ -4,7 +4,23 @@
 
   {% if recent_friend %}
     <div class="recent-score-banner">
-      Great job <strong>{{ recent_friend }}</strong>! You scored <strong>{{ recent_score }}</strong> points!
+     {% if recent_friend %}
+  <div style="text-align: center; background: #e7f5ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+    <h3>{{ recent_friend }} scored {{ recent_score }} / {{ quiz.max_score }}!</h3>
+    
+    {% set percentage = (recent_score|int / quiz.max_score|int) * 100 %}
+    
+    {% if percentage == 100 %}
+      <p>👯‍♀️ Besties for life! You know them better than they know themselves.</p>
+    {% elif percentage >= 75 %}
+      <p>😎 Not bad! You're definitely in the inner circle.</p>
+    {% elif percentage >= 50 %}
+      <p>🫠 You survived, but maybe pay a little more attention when they talk?</p>
+    {% else %}
+      <p>🤡 Yikes. Are you sure you two have actually met?</p>
+    {% endif %}
+  </div>
+{% endif %}
     </div>
   {% endif %}
 
