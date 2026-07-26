@@ -7,35 +7,6 @@ app = Flask(__name__)
 app.secret_key = 'super-secret-key-change-this'
 DATABASE = 'matequiz.db'
 
-# Predefined Questions
-DEFAULT_QUESTIONS = [
-    {
-        "id": 1,
-        "question": "What is my ideal weekend activity?",
-        "options": ["Binge-watching shows", "Outdoor adventure", "Gaming all night", "Hanging out with friends"]
-    },
-    {
-        "id": 2,
-        "question": "Which superpower would I pick?",
-        "options": ["Invisibility", "Flight", "Teleportation", "Mind Reading"]
-    },
-    {
-        "id": 3,
-        "question": "What is my go-to comfort food?",
-        "options": ["Pizza", "Burgers", "Ice Cream", "Ramen"]
-    },
-    {
-        "id": 4,
-        "question": "Where would I love to go on vacation?",
-        "options": ["Tropical Beach", "Historic European City", "Mountain Cabin", "Bustling Tokyo"]
-    },
-    {
-        "id": 5,
-        "question": "Are you a morning person or night owl?",
-        "options": ["Night Owl 🦉", "Early Bird 🌅", "Depends on coffee ☕", "Permanently exhausted 😴"]
-    }
-]
-
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -87,25 +58,27 @@ def create_quiz():
         if not creator_name:
             flash('Please enter your name!', 'error')
             return redirect(url_for('create_quiz'))
-
-        answers = {}
-        for q in DEFAULT_QUESTIONS:
-            answer = request.form.get(f'q_{q["id"]}')
-            if not answer:
-                flash(f'Please answer Question {q["id"]}!', 'error')
-                return redirect(url_for('create_quiz'))
-            answers[str(q['id'])] = answer
+        
+        # Loop through all 10 possible inputs
+        quiz_data = []
+        for i in range(1, 11):
+            q_text = request.form.get(f'q{i}_text')
+            q_ans = request.form.get(f'q{i}_ans')
+            
+            # Only save the question if BOTH fields were filled out
+            if q_text and q_ans:
+                quiz_data.append({"question": q_text.strip(), "answer": q_ans.lower().strip()})
 
         quiz_id = str(uuid.uuid4())[:8]
 
         db = get_db()
         db.execute('INSERT INTO quizzes (quiz_id, creator_name, answers) VALUES (?, ?, ?)',
-                   (quiz_id, creator_name, json.dumps(answers)))
+                   (quiz_id, creator_name, json.dumps(quiz_data)))
         db.commit()
 
         return redirect(url_for('share_quiz', quiz_id=quiz_id))
 
-    return render_template('create.html', questions=DEFAULT_QUESTIONS)
+    return render_template('create.html')
 
 @app.route('/quiz/<quiz_id>/share')
 def share_quiz(quiz_id):
@@ -124,7 +97,8 @@ def take_quiz(quiz_id):
     if not quiz:
         return "Quiz not found!", 404
 
-    correct_answers = json.loads(quiz['answers'])
+    # Load the custom questions from the database
+    quiz_data = json.loads(quiz['answers'])
 
     if request.method == 'POST':
         friend_name = request.form.get('friend_name', '').strip()
@@ -133,10 +107,13 @@ def take_quiz(quiz_id):
             return redirect(url_for('take_quiz', quiz_id=quiz_id))
 
         score = 0
-        total = len(DEFAULT_QUESTIONS)
-        for q in DEFAULT_QUESTIONS:
-            friend_ans = request.form.get(f'q_{q["id"]}')
-            if friend_ans == correct_answers.get(str(q['id'])):
+        total = len(quiz_data)
+        
+        # Check the friend's answers against the correct ones
+        for index, item in enumerate(quiz_data):
+            friend_ans = request.form.get(f'ans_{index}')
+            # Convert to lowercase so "Pizza" matches "pizza"
+            if friend_ans and friend_ans.lower().strip() == item['answer']:
                 score += 1
 
         db.execute('INSERT INTO submissions (quiz_id, friend_name, score, max_score) VALUES (?, ?, ?, ?)',
@@ -145,7 +122,7 @@ def take_quiz(quiz_id):
 
         return redirect(url_for('scoreboard', quiz_id=quiz_id, friend_name=friend_name, score=score))
 
-    return render_template('take.html', quiz=quiz, questions=DEFAULT_QUESTIONS)
+    return render_template('take.html', quiz=quiz, quiz_data=quiz_data)
 
 @app.route('/quiz/<quiz_id>/scoreboard')
 def scoreboard(quiz_id):
@@ -163,58 +140,3 @@ def scoreboard(quiz_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
-   @app.route('/create', methods=['GET', 'POST'])
-def create_quiz():
-    if request.method == 'POST':
-        creator_name = request.form.get('creator_name', '').strip()
-        if not creator_name:
-            flash('Please enter your name!', 'error')
-            return redirect(url_for('create_quiz'))
-        quiz_data = []
-        for i in range(1, 11):
-            q_text = request.form.get(f'q{i}_text')
-            q_ans = request.form.get(f'q{i}_ans')
-            if q_text and q_ans:
-                quiz_data.append({"question": q_text.strip(), "answer": q_ans.lower().strip()})
-
-        quiz_id = str(uuid.uuid4())[:8]
-
-        db = get_db()
-        db.execute('INSERT INTO quizzes (quiz_id, creator_name, answers) VALUES (?, ?, ?)',
-                   (quiz_id, creator_name, json.dumps(quiz_data)))
-        db.commit()
-
-        return redirect(url_for('share_quiz', quiz_id=quiz_id))
-
-    return render_template('create.html')
-
-
-@app.route('/quiz/<quiz_id>', methods=['GET', 'POST'])
-def take_quiz(quiz_id):
-    db = get_db()
-    quiz = db.execute('SELECT * FROM quizzes WHERE quiz_id = ?', (quiz_id,)).fetchone()
-    if not quiz:
-        return "Quiz not found!", 404
-
-    quiz_data = json.loads(quiz['answers'])
-
-    if request.method == 'POST':
-        friend_name = request.form.get('friend_name', '').strip()
-        if not friend_name:
-            flash('Please enter your name!', 'error')
-            return redirect(url_for('take_quiz', quiz_id=quiz_id))
-
-        score = 0
-        total = len(quiz_data)
-        for index, item in enumerate(quiz_data):
-            friend_ans = request.form.get(f'ans_{index}')
-            if friend_ans and friend_ans.lower().strip() == item['answer']:
-                score += 1
-
-        db.execute('INSERT INTO submissions (quiz_id, friend_name, score, max_score) VALUES (?, ?, ?, ?)',
-                   (quiz_id, friend_name, score, total))
-        db.commit()
-
-        return redirect(url_for('scoreboard', quiz_id=quiz_id, friend_name=friend_name, score=score))
-
-    return render_template('take.html', quiz=quiz, quiz_data=quiz_data)
