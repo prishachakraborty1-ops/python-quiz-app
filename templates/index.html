@@ -1,13 +1,7 @@
 {% extends "base.html" %}
-
-{# Include external stylesheet from static/styles.css. Ensure the file exists at static/styles.css #}
-{% block head %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-{% endblock %}
-
 {% block content %}
-  <h1>MateQuiz 🤝</h1>
-  <p class="center-text">Create your personal quiz, share the link with friends, and find out who truly knows you best!</p>
+  <h1>MateQuiz 🤡</h1>
+  <p>Welcome to the ultimate friendship test! Time to expose which of your friends actually listens to you, and who is just here for the free snacks.</p>
   <br>
-  <a href="{{ url_for('create_quiz') }}" class="btn">Create Your Quiz Now</a>
+  <a href="{{ url_for('create_quiz') }}" class="btn">Create Your Quiz (Expose Them) 🚀</a>
 {% endblock %}
