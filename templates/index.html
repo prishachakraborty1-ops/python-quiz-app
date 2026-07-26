@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>MateQuiz 🤡</h1>
-  <p>Welcome to the ultimate friendship test! Time to expose which of your friends actually listens to you, and who is just here for the free snacks.</p>
+  <h1>MateQuiz 🤪</h1>
+  
+  <div style="text-align: center;">
+    <img src="https://media.giphy.com/media/l41lFw057lAJQMwg0/giphy.gif" alt="Funny Friend GIF" class="funny-img">
+  </div>
+
+  <p><strong>Welcome to the ultimate friendship test!</strong> 💀</p>
+  <p>Time to expose which of your friends actually pays attention to you, and who is just pretending so you'll share your food. 🍕</p>
   <br>
-  <a href="{{ url_for('create_quiz') }}" class="btn">Create Your Quiz (Expose Them) 🚀</a>
+  <a href="{{ url_for('create_quiz') }}" class="btn">Create Quiz & Expose Them 🚀</a>
 {% endblock %}
