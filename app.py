@@ -163,3 +163,27 @@ def scoreboard(quiz_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+    @app.route('/create', methods=['GET', 'POST'])
+def create_quiz():
+    if request.method == 'POST':
+        creator_name = request.form.get('creator_name', '').strip()
+        
+        # Collect custom questions and answers
+        quiz_data = []
+        for i in range(1, 4):
+            q_text = request.form.get(f'q{i}_text')
+            q_ans = request.form.get(f'q{i}_ans')
+            if q_text and q_ans:
+                quiz_data.append({"question": q_text, "answer": q_ans.lower().strip()})
+
+        quiz_id = str(uuid.uuid4())[:8]
+
+        db = get_db()
+        # We store the entire quiz_data array inside the 'answers' column as JSON
+        db.execute('INSERT INTO quizzes (quiz_id, creator_name, answers) VALUES (?, ?, ?)',
+                   (quiz_id, creator_name, json.dumps(quiz_data)))
+        db.commit()
+
+        return redirect(url_for('share_quiz', quiz_id=quiz_id))
+
+    return render_template('create.html')
