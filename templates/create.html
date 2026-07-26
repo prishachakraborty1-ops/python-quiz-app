@@ -1,26 +1,20 @@
-{% extends "base.html" %}
-{% block content %}
-  <h2>Create Your Quiz 📝</h2>
-  <form method="POST">
-    <div class="form-group">
-      <label for="creator_name">Your Name</label>
-      <input type="text" id="creator_name" name="creator_name" placeholder="e.g., Alex" required>
+<form method="POST">
+  <div class="form-group">
+    <label>Your Name</label>
+    <input type="text" name="creator_name" required>
+  </div>
+
+  <p>Write up to 10 questions about yourself (minimum 3 required)!</p>
+
+  {% for i in range(1, 11) %}
+    <div class="form-group" style="background: #f1f3f5; padding: 15px; border-radius: 8px;">
+      <label>Custom Question {{ i }} {% if i > 3 %}(Optional){% endif %}</label>
+      <input type="text" name="q{{ i }}_text" placeholder="e.g., What is my favorite movie?" {% if i <= 3 %}required{% endif %}>
+      
+      <label style="margin-top: 10px;">The Correct Answer</label>
+      <input type="text" name="q{{ i }}_ans" placeholder="e.g., Inception" {% if i <= 3 %}required{% endif %}>
     </div>
+  {% endfor %}
 
-    {% for q in questions %}
-      <div class="form-group">
-        <label>{{ loop.index }}. {{ q.question }}</label>
-        <div class="options-grid">
-          {% for opt in q.options %}
-            <label class="option-btn">
-              <input type="radio" name="q_{{ q.id }}" value="{{ opt }}" required>
-              <span>{{ opt }}</span>
-            </label>
-          {% endfor %}
-        </div>
-      </div>
-    {% endfor %}
-
-    <button type="submit" class="btn">Generate Share Link</button>
-  </form>
-{% endblock %}
+  <button type="submit" class="btn">Create Quiz</button>
+</form>
