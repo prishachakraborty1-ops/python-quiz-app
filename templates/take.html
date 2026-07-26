@@ -1,15 +1,26 @@
-<form method="POST">
-  <div class="form-group">
-    <label for="friend_name">Your Name</label>
-    <input type="text" id="friend_name" name="friend_name" placeholder="Enter your name" required>
+{% extends "base.html" %}
+{% block content %}
+  <h2>Do you REALLY know {{ quiz.creator_name }}? 🧐</h2>
+  
+  <div style="text-align: center;">
+    <img src="https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif" alt="Staring GIF" class="funny-img">
   </div>
+  
+  <p style="text-align: center; font-weight: bold; color: #ff4757;">Don't mess this up, or the friendship is over. 💅</p>
 
-  {% for item in quiz_data %}
-    <div class="form-group" style="background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-      <label>{{ loop.index }}. {{ item.question }}</label>
-      <input type="text" name="ans_{{ loop.index0 }}" placeholder="Type your guess here..." required>
+  <form method="POST">
+    <div class="form-group">
+      <label for="friend_name">Enter your name (if you dare):</label>
+      <input type="text" id="friend_name" name="friend_name" placeholder="e.g., Soon-to-be ex-bestie" required>
     </div>
-  {% endfor %}
 
-  <button type="submit" class="btn">Submit Answers</button>
-</form>
+    {% for item in quiz_data %}
+      <div class="form-group" style="background: #ffffff; padding: 15px; border-radius: 8px; border: 2px solid #dfe6e9;">
+        <label>🤔 {{ loop.index }}. {{ item.question }}</label>
+        <input type="text" name="ans_{{ loop.index0 }}" placeholder="Type your guess here..." required>
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn">Submit Answers & Pray 🙏</button>
+  </form>
+{% endblock %}
