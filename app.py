@@ -106,44 +106,56 @@ def take_quiz(quiz_id):
         q_lower = item['question'].lower()
         ans_value = item['answer']
         
+        # --- SMART REALISTIC CATEGORY LOGIC ---
         fakes_dict = {
             "food": {
-                "keywords": ["food", "eat", "drink", "meal", "coffee", "tea", "snack", "hungry", "dish"],
-                "options": ["Stale pizza from last week 🍕", "Just plain water 🧊", "Spicy noodles at 3 AM 🍜", "Anything free 🤑", "Burnt toast 🍞🔥", "Raw coffee beans ☕"]
+                "keywords": ["food", "eat", "drink", "meal", "coffee", "tea", "snack", "hungry", "dish", "breakfast", "lunch", "dinner"],
+                "options": ["Biryani 🍛", "Maggi 🍜", "Pizza 🍕", "Pasta 🍝", "Momo 🥟", "Burger 🍔", "Ice cream 🍦", "Fries 🍟", "Chocolates 🍫"]
             },
             "color": {
-                "keywords": ["color", "wear", "closet", "outfit", "dress", "clothes"],
-                "options": ["Neon green (to blind haters) 🤢", "Vantablack (like my soul) 🖤", "Invisible clothes 👻", "Rainbow tie-dye 🌈", "Just grey sweatpants 👖"]
+                "keywords": ["color", "wear", "closet", "outfit", "dress", "clothes", "shade"],
+                "options": ["Black 🖤", "Blue 💙", "Red ❤️", "White 🤍", "Purple 💜", "Yellow 💛", "Green 💚", "Brown 🤎"]
             },
             "travel": {
-                "keywords": ["travel", "city", "country", "place", "go", "visit", "teleport", "vacation"],
-                "options": ["My bed (the best place) 🛏️", "Mars with Elon Musk 🚀", "Lost in the Bermuda Triangle 🗺️", "Nowhere, I'm broke 💸", "Inside the fridge 🥶"]
+                "keywords": ["travel", "city", "country", "place", "go", "visit", "teleport", "vacation", "trip"],
+                "options": ["Goa 🏖️", "Paris 🗼", "Maldives 🏝️", "Mountains ⛰️", "London 🎡", "Japan 🗾", "Dubai 🏙️", "Switzerland 🏔️"]
             },
-            "people": {
-                "keywords": ["who", "friend", "person", "group", "bestie", "movie"],
-                "options": ["My imaginary friend 👻", "My sleep paralysis demon 👹", "A random stray cat 🐈", "Myself, because I'm awesome 💅", "Whoever brings me food 🍔"]
+            "hobby": {
+                "keywords": ["sunday", "free time", "hobby", "do", "spend", "weekend", "day", "bored", "habit"],
+                "options": ["Sleeping 😴", "Watching Netflix 🎬", "Scrolling Instagram 📱", "Listening to music 🎧", "Reading books 📚", "Gaming 🎮", "Shopping 🛍️", "Coding 💻"]
             },
-            "lifestyle": {
-                "keywords": ["sunday", "free time", "hobby", "do", "spend", "weekend", "day"],
-                "options": ["Scrolling reels for 6 hours 📱", "Contemplating my life choices 🤔", "Sleeping until Monday 😴", "Talking to my plants 🪴", "Crying over broken code 😭💻", "Pretending to be busy 🥸"]
+            "music": {
+                "keywords": ["song", "music", "listen", "artist", "singer", "band", "playlist", "genre"],
+                "options": ["Taylor Swift 🎤", "Arijit Singh 🎸", "BTS 💜", "The Weeknd 🎧", "Darshan Raval 🎶", "Ed Sheeran 🎸", "Hip-hop 🎧", "K-Pop 🎶"]
+            },
+            "movie": {
+                "keywords": ["movie", "show", "series", "watch", "actor", "actress", "marvel", "anime", "cinema"],
+                "options": ["Friends 🛋️", "Stranger Things 🚲", "Marvel Movies 🦸‍♂️", "Anime 🌸", "Harry Potter ⚡", "K-Dramas 📺", "Horror movies 👻"]
+            },
+            "number": {
+                "keywords": ["how many", "age", "year", "date", "time", "number", "alarms", "hours"],
+                "options": ["1", "2", "3", "4", "5", "10", "Zero", "Too many to count"]
             }
         }
+        
+        # ডিফল্ট অপশন (যদি প্রশ্নের সাথে কোনো ক্যাটাগরি না মেলে)
         generic_fakes = [
-            "Getting abducted by aliens 👽🛸",
-            "Becoming a full-time meme 🤡📉",
-            "Talking to walls 🧱🗣️",
-            "Forgetting my own name 🤔🚪",
-            "Dancing on TikTok for views 🕺🤳",
-            "Fighting a street dog and losing 🐕🥊"
+            "Yes 👍", "No 👎", "Maybe 🤔", "Depends on the mood 🎭", 
+            "Both A and B 🧐", "None of the above 🤷‍♀️", "Not sure 🤐", 
+            "That's a secret 🤫"
         ]
+        
+        # ক্যাটাগরি খোঁজার চেষ্টা
         selected_fakes = generic_fakes
         for category, data in fakes_dict.items():
             if any(kw in q_lower for kw in data["keywords"]):
                 selected_fakes = data["options"]
                 break
                 
+        # আসল উত্তরের সাথে যেন হুবহু মিলে না যায়
         available_fakes = [f for f in selected_fakes if f.lower().strip() != ans_value.lower().strip()]
         
+        # যদি কোনো কারণে ৩টি অপশন না থাকে, তখন অন্যান্য লিস্ট থেকে ধার করবে
         if len(available_fakes) < 3:
             fallback = [f for f in generic_fakes if f.lower().strip() != ans_value.lower().strip() and f not in available_fakes]
             available_fakes.extend(fallback)
@@ -151,6 +163,7 @@ def take_quiz(quiz_id):
         # র‍্যান্ডম ৩টি অপশন সিলেক্ট করা
         fakes = random.sample(available_fakes, min(3, len(available_fakes)))
         
+        # আসল উত্তর এবং ৩টি ভুল অপশন একসাথে করা
         options = [ans_value] + fakes
         random.shuffle(options)
         item['options'] = options
