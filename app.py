@@ -59,12 +59,15 @@ def create_quiz():
         if not creator_name:
             flash('Please enter your name! 👑', 'error')
             return redirect(url_for('create_quiz'))
+        
         quiz_data = []
         for i in range(1, 11):
             q_text = request.form.get(f'q{i}_text', '').strip()
             q_ans = request.form.get(f'q{i}_ans', '').strip()
+            
             if q_text and q_ans:
                 quiz_data.append({"question": q_text, "answer": q_ans})
+
         if len(quiz_data) < 3:
             flash('Please fill out at least 3 questions and answers! ⚠️', 'error')
             return redirect(url_for('create_quiz'))
@@ -99,27 +102,53 @@ def take_quiz(quiz_id):
 
     quiz_data = json.loads(quiz['answers'])
 
-    funny_fakes = [
-        "Sleeping 24/7 😴🛌",
-        "Eating garbage like a raccoon 🦝🗑️",
-        "Crying over a bug in the code 😭💻",
-        "Getting abducted by aliens 👽🛸",
-        "Becoming a full-time meme 🤡📉",
-        "Talking to walls 🧱🗣️",
-        "Forgetting my own name 🤔🚪",
-        "Spilling hot tea on myself ☕🔥",
-        "Running away to the mountains 🏔️🏃‍♀️",
-        "Fighting a street dog and losing 🐕🥊",
-        "Googling how to be cool 🤓🔍",
-        "Being completely useless 🫠🗑️",
-        "Dancing on TikTok for views 🕺🤳",
-        "Living in a cardboard box 📦🏚️",
-        "Trying to fix code with duct tape 🩹🛠️"
-    ]
-
     for item in quiz_data:
+        q_lower = item['question'].lower()
         ans_value = item['answer']
-        available_fakes = [f for f in funny_fakes if f.lower().strip() != ans_value.lower().strip()]
+        
+        fakes_dict = {
+            "food": {
+                "keywords": ["food", "eat", "drink", "meal", "coffee", "tea", "snack", "hungry", "dish"],
+                "options": ["Stale pizza from last week 🍕", "Just plain water 🧊", "Spicy noodles at 3 AM 🍜", "Anything free 🤑", "Burnt toast 🍞🔥", "Raw coffee beans ☕"]
+            },
+            "color": {
+                "keywords": ["color", "wear", "closet", "outfit", "dress", "clothes"],
+                "options": ["Neon green (to blind haters) 🤢", "Vantablack (like my soul) 🖤", "Invisible clothes 👻", "Rainbow tie-dye 🌈", "Just grey sweatpants 👖"]
+            },
+            "travel": {
+                "keywords": ["travel", "city", "country", "place", "go", "visit", "teleport", "vacation"],
+                "options": ["My bed (the best place) 🛏️", "Mars with Elon Musk 🚀", "Lost in the Bermuda Triangle 🗺️", "Nowhere, I'm broke 💸", "Inside the fridge 🥶"]
+            },
+            "people": {
+                "keywords": ["who", "friend", "person", "group", "bestie", "movie"],
+                "options": ["My imaginary friend 👻", "My sleep paralysis demon 👹", "A random stray cat 🐈", "Myself, because I'm awesome 💅", "Whoever brings me food 🍔"]
+            },
+            "lifestyle": {
+                "keywords": ["sunday", "free time", "hobby", "do", "spend", "weekend", "day"],
+                "options": ["Scrolling reels for 6 hours 📱", "Contemplating my life choices 🤔", "Sleeping until Monday 😴", "Talking to my plants 🪴", "Crying over broken code 😭💻", "Pretending to be busy 🥸"]
+            }
+        }
+        generic_fakes = [
+            "Getting abducted by aliens 👽🛸",
+            "Becoming a full-time meme 🤡📉",
+            "Talking to walls 🧱🗣️",
+            "Forgetting my own name 🤔🚪",
+            "Dancing on TikTok for views 🕺🤳",
+            "Fighting a street dog and losing 🐕🥊"
+        ]
+        selected_fakes = generic_fakes
+        for category, data in fakes_dict.items():
+            if any(kw in q_lower for kw in data["keywords"]):
+                selected_fakes = data["options"]
+                break
+                
+        available_fakes = [f for f in selected_fakes if f.lower().strip() != ans_value.lower().strip()]
+        
+        if len(available_fakes) < 3:
+            fallback = [f for f in generic_fakes if f.lower().strip() != ans_value.lower().strip() and f not in available_fakes]
+            available_fakes.extend(fallback)
+            
+        # র‍্যান্ডম ৩টি অপশন সিলেক্ট করা
         fakes = random.sample(available_fakes, min(3, len(available_fakes)))
         
         options = [ans_value] + fakes
