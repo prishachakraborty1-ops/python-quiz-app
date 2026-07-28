@@ -106,19 +106,26 @@ def take_quiz(quiz_id):
         q_lower = item['question'].lower()
         ans_value = item['answer']
         
-        # --- SMART REALISTIC CATEGORY LOGIC ---
         fakes_dict = {
+            "superpower": {
+                "keywords": ["power", "superpower", "magic", "hero", "ability"],
+                "options": ["Invisibility 🫥", "Flying 🕊️", "Teleportation 🌌", "Mind reading 🧠", "Time travel ⏳", "Super strength 💪"]
+            },
+            "time_travel": {
+                "keywords": ["past", "future", "time machine", "history", "time"],
+                "options": ["Buy Bitcoin early 💰", "Stop myself from doing something stupid 🤦‍♀️", "Relive my best memories ✨", "Meet my ancestors 👴", "Just observe without changing anything 👀"]
+            },
             "food": {
-                "keywords": ["food", "eat", "drink", "meal", "coffee", "tea", "snack", "hungry", "dish", "breakfast", "lunch", "dinner"],
+                "keywords": ["food", "eat", "drink", "meal", "coffee", "tea", "snack", "hungry", "dish", "breakfast", "lunch", "dinner", "pizza"],
                 "options": ["Biryani 🍛", "Maggi 🍜", "Pizza 🍕", "Pasta 🍝", "Momo 🥟", "Burger 🍔", "Ice cream 🍦", "Fries 🍟", "Chocolates 🍫"]
             },
             "color": {
                 "keywords": ["color", "wear", "closet", "outfit", "dress", "clothes", "shade"],
-                "options": ["Black 🖤", "Blue 💙", "Red ❤️", "White 🤍", "Purple 💜", "Yellow 💛", "Green 💚", "Brown 🤎"]
+                "options": ["Black 🖤", "Blue 💙", "Red ❤️", "White 🤍", "Purple 💜", "Yellow 💛", "Green 💚", "Brown 🤎", "Pink 💖"]
             },
             "travel": {
-                "keywords": ["travel", "city", "country", "place", "go", "visit", "teleport", "vacation", "trip"],
-                "options": ["Goa 🏖️", "Paris 🗼", "Maldives 🏝️", "Mountains ⛰️", "London 🎡", "Japan 🗾", "Dubai 🏙️", "Switzerland 🏔️"]
+                "keywords": ["travel", "city", "country", "place", "visit", "vacation", "trip", "holiday", "tour", "destination"],
+                "options": ["Goa 🏖️", "Paris 🗼", "Maldives 🏝️", "Mountains ⛰️", "London 🎡", "Japan 🗾", "Dubai 🏙️", "Switzerland 🏔️", "New York 🗽"]
             },
             "hobby": {
                 "keywords": ["sunday", "free time", "hobby", "do", "spend", "weekend", "day", "bored", "habit"],
@@ -129,41 +136,43 @@ def take_quiz(quiz_id):
                 "options": ["Taylor Swift 🎤", "Arijit Singh 🎸", "BTS 💜", "The Weeknd 🎧", "Darshan Raval 🎶", "Ed Sheeran 🎸", "Hip-hop 🎧", "K-Pop 🎶"]
             },
             "movie": {
-                "keywords": ["movie", "show", "series", "watch", "actor", "actress", "marvel", "anime", "cinema"],
+                "keywords": ["movie", "show", "series", "watch", "actor", "actress", "marvel", "anime", "cinema", "film"],
                 "options": ["Friends 🛋️", "Stranger Things 🚲", "Marvel Movies 🦸‍♂️", "Anime 🌸", "Harry Potter ⚡", "K-Dramas 📺", "Horror movies 👻"]
-            },
-            "number": {
-                "keywords": ["how many", "age", "year", "date", "time", "number", "alarms", "hours"],
-                "options": ["1", "2", "3", "4", "5", "10", "Zero", "Too many to count"]
             }
         }
         
-        # ডিফল্ট অপশন (যদি প্রশ্নের সাথে কোনো ক্যাটাগরি না মেলে)
-        generic_fakes = [
-            "Yes 👍", "No 👎", "Maybe 🤔", "Depends on the mood 🎭", 
-            "Both A and B 🧐", "None of the above 🤷‍♀️", "Not sure 🤐", 
-            "That's a secret 🤫"
-        ]
-        
-        # ক্যাটাগরি খোঁজার চেষ্টা
+        ans_length = len(ans_value.split())
+        if ans_length >= 3:
+            generic_fakes = [
+                "I would probably just panic and do nothing 🫠",
+                "I'd ask my best friend for advice first 👯‍♀️",
+                "I would overthink it for hours 🧠",
+                "Honestly, I'd just take a nap instead 😴",
+                "I would complain about it but do nothing 🙄",
+                "I'd write some Python code to solve it 💻",
+                "Cry in a corner 😭",
+                "I will act like nothing happened 🤫"
+            ]
+        else:
+            generic_fakes = [
+                "Nothing 😶", "Everything ✨", "Not sure 🤷‍♀️", "Secret 🤫", 
+                "Money 💸", "Sleep 😴", "Food 🍕", "My phone 📱", "Myself 😎"
+            ]
+            
         selected_fakes = generic_fakes
         for category, data in fakes_dict.items():
             if any(kw in q_lower for kw in data["keywords"]):
                 selected_fakes = data["options"]
                 break
                 
-        # আসল উত্তরের সাথে যেন হুবহু মিলে না যায়
         available_fakes = [f for f in selected_fakes if f.lower().strip() != ans_value.lower().strip()]
         
-        # যদি কোনো কারণে ৩টি অপশন না থাকে, তখন অন্যান্য লিস্ট থেকে ধার করবে
         if len(available_fakes) < 3:
             fallback = [f for f in generic_fakes if f.lower().strip() != ans_value.lower().strip() and f not in available_fakes]
             available_fakes.extend(fallback)
             
-        # র‍্যান্ডম ৩টি অপশন সিলেক্ট করা
         fakes = random.sample(available_fakes, min(3, len(available_fakes)))
         
-        # আসল উত্তর এবং ৩টি ভুল অপশন একসাথে করা
         options = [ans_value] + fakes
         random.shuffle(options)
         item['options'] = options
