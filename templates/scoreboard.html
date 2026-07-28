@@ -1,52 +1,93 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>🏆 Scoreboard: {{ quiz.creator_name }}'s Quiz</h2>
+  <!-- Confetti Animation Script -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+  <h2>The Moment of Truth... 🥁</h2>
+  
   {% if recent_friend %}
-    <div class="recent-score-banner">
-     {% if recent_friend %}
-  <div style="text-align: center; background: #e7f5ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-    <h3>{{ recent_friend }} scored {{ recent_score }} / {{ quiz.max_score }}!</h3>
+    {% set total_q = scores[0].max_score if scores else 3 %}
+    {% set percentage = (recent_score|int / total_q|int) * 100 %}
     
-    {% set percentage = (recent_score|int / quiz.max_score|int) * 100 %}
-    
-    {% if percentage == 100 %}
-      <p>👯‍♀️ Besties for life! You know them better than they know themselves.</p>
-    {% elif percentage >= 75 %}
-      <p>😎 Not bad! You're definitely in the inner circle.</p>
-    {% elif percentage >= 50 %}
-      <p>🫠 You survived, but maybe pay a little more attention when they talk?</p>
-    {% else %}
-      <p>🤡 Yikes. Are you sure you two have actually met?</p>
-    {% endif %}
-  </div>
-{% endif %}
+    <style>
+      .result-card {
+        text-align: center;
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        /* Pop-in animation */
+        animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        transform: scale(0);
+      }
+      
+      /* Dynamic Colors based on friendship level */
+      .score-high { background: #d4edda; border: 4px dashed #28a745; color: #155724; }
+      .score-mid { background: #fff3cd; border: 4px dashed #ffc107; color: #856404; }
+      .score-low { background: #f8d7da; border: 4px dashed #dc3545; color: #721c24; 
+                   animation: popIn 0.6s forwards, shake 0.5s 0.8s; } /* Adds a shaking effect for bad scores */
+
+      @keyframes popIn { 100% { transform: scale(1); } }
+      @keyframes shake { 
+        0%, 100% {transform: translateX(0);} 
+        25% {transform: translateX(-15px) rotate(-5deg);} 
+        75% {transform: translateX(15px) rotate(5deg);} 
+      }
+    </style>
+
+    <div class="result-card {% if percentage >= 75 %}score-high{% elif percentage >= 50 %}score-mid{% else %}score-low{% endif %}">
+      <h3 style="font-size: 1.8rem; margin-top: 0;">{{ recent_friend }} scored {{ recent_score }} / {{ total_q }}!</h3>
+      
+      {% if percentage == 100 %}
+        <p style="font-size: 1.3rem;">👯‍♀️ <strong>Besties for life!</strong> You actually listen to them! (Or you just guessed really well).</p>
+        <script>
+          // Huge Confetti Explosion for 100%
+          setTimeout(() => { confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } }); }, 600);
+        </script>
+      {% elif percentage >= 75 %}
+        <p style="font-size: 1.3rem;">😎 <strong>Not bad!</strong> You're definitely in the inner circle.</p>
+        <script>
+          // Small Confetti for passing
+          setTimeout(() => { confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } }); }, 600);
+        </script>
+      {% elif percentage >= 50 %}
+        <p style="font-size: 1.3rem;">🫠 <strong>You survived,</strong> but barely. Do you even know them?</p>
+      {% else %}
+        <p style="font-size: 1.3rem;">🤡 <strong>Yikes.</strong> Fake friend alert! 🚨</p>
+      {% endif %}
     </div>
   {% endif %}
 
-  {% if scores %}
-    <table class="scoreboard-table">
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Name</th>
-          <th>Score</th>
+  <table class="scoreboard-table">
+    <thead>
+      <tr>
+        <th style="background: var(--primary); color: white; border-top-left-radius: 12px;">Rank</th>
+        <th style="background: var(--primary); color: white;">Name</th>
+        <th style="background: var(--primary); color: white; border-top-right-radius: 12px;">Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in scores %}
+        <tr style="background: {% if loop.index == 1 %}#fff9db{% else %}white{% endif %};">
+          <td style="font-weight: bold; font-size: 1.2rem;">
+            {% if loop.index == 1 %}👑 1st{% elif loop.index == 2 %}🥈 2nd{% elif loop.index == 3 %}🥉 3rd{% else %}#{{ loop.index }}{% endif %}
+          </td>
+          <td style="font-weight: bold;">{{ s.friend_name }}</td>
+          <td style="color: var(--primary); font-weight: bold;">{{ s.score }} / {{ s.max_score }}</td>
         </tr>
-      </thead>
-      <tbody>
-        {% for item in scores %}
-          <tr>
-            <td>#{{ loop.index }}</td>
-            <td><strong>{{ item.friend_name }}</strong></td>
-            <td>{{ item.score }} / {{ item.max_score }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p class="no-scores-message">No one has taken this quiz yet. Share the link!</p>
-  {% endif %}
-
+      {% else %}
+        <tr>
+          <td colspan="3" style="padding: 20px;">No one has taken this quiz yet! Be the first victim.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  <div class="share-box">
+    Share this link to expose more friends: <br><br>
+    <a href="{{ url_for('take_quiz', quiz_id=quiz.quiz_id, _external=True) }}" style="color: var(--primary); text-decoration: underline;">{{ url_for('take_quiz', quiz_id=quiz.quiz_id, _external=True) }}</a>
+  </div>
+  
   <br>
-  <a href="{{ url_for('index') }}" class="btn">Create Your Own Quiz</a>
+  <a href="{{ url_for('create_quiz') }}" class="btn">Create Your Own Quiz 🚀</a>
 {% endblock %}
