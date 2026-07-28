@@ -1,41 +1,12 @@
-import random
 import sqlite3
 import uuid
 import json
+import random
 from flask import Flask, render_template, request, redirect, url_for, flash, g
 
 app = Flask(__name__)
 app.secret_key = 'super-secret-key-change-this'
 DATABASE = 'matequiz.db'
-
-# Predefined Questions
-DEFAULT_QUESTIONS = [
-    {
-        "id": 1,
-        "question": "What is my ideal weekend activity?",
-        "options": ["Binge-watching shows", "Outdoor adventure", "Gaming all night", "Hanging out with friends"]
-    },
-    {
-        "id": 2,
-        "question": "Which superpower would I pick?",
-        "options": ["Invisibility", "Flight", "Teleportation", "Mind Reading"]
-    },
-    {
-        "id": 3,
-        "question": "What is my go-to comfort food?",
-        "options": ["Pizza", "Burgers", "Ice Cream", "Ramen"]
-    },
-    {
-        "id": 4,
-        "question": "Where would I love to go on vacation?",
-        "options": ["Tropical Beach", "Historic European City", "Mountain Cabin", "Bustling Tokyo"]
-    },
-    {
-        "id": 5,
-        "question": "Are you a morning person or night owl?",
-        "options": ["Night Owl 🦉", "Early Bird 🌅", "Depends on coffee ☕", "Permanently exhausted 😴"]
-    }
-]
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -86,27 +57,28 @@ def create_quiz():
     if request.method == 'POST':
         creator_name = request.form.get('creator_name', '').strip()
         if not creator_name:
-            flash('Please enter your name!', 'error')
+            flash('Please enter your name! 👑', 'error')
             return redirect(url_for('create_quiz'))
-
-        answers = {}
-        for q in DEFAULT_QUESTIONS:
-            answer = request.form.get(f'q_{q["id"]}')
-            if not answer:
-                flash(f'Please answer Question {q["id"]}!', 'error')
-                return redirect(url_for('create_quiz'))
-            answers[str(q['id'])] = answer
+        quiz_data = []
+        for i in range(1, 11):
+            q_text = request.form.get(f'q{i}_text', '').strip()
+            q_ans = request.form.get(f'q{i}_ans', '').strip()
+            if q_text and q_ans:
+                quiz_data.append({"question": q_text, "answer": q_ans})
+        if len(quiz_data) < 3:
+            flash('Please fill out at least 3 questions and answers! ⚠️', 'error')
+            return redirect(url_for('create_quiz'))
 
         quiz_id = str(uuid.uuid4())[:8]
 
         db = get_db()
         db.execute('INSERT INTO quizzes (quiz_id, creator_name, answers) VALUES (?, ?, ?)',
-                   (quiz_id, creator_name, json.dumps(answers)))
+                   (quiz_id, creator_name, json.dumps(quiz_data)))
         db.commit()
 
         return redirect(url_for('share_quiz', quiz_id=quiz_id))
 
-    return render_template('create.html', questions=DEFAULT_QUESTIONS)
+    return render_template('create.html')
 
 @app.route('/quiz/<quiz_id>/share')
 def share_quiz(quiz_id):
@@ -146,16 +118,18 @@ def take_quiz(quiz_id):
     ]
 
     for item in quiz_data:
-        fakes = random.sample(funny_fakes, 3)
-        options = [item['answer']] + fakes
+        ans_value = item['answer']
+        available_fakes = [f for f in funny_fakes if f.lower().strip() != ans_value.lower().strip()]
+        fakes = random.sample(available_fakes, min(3, len(available_fakes)))
+        
+        options = [ans_value] + fakes
         random.shuffle(options)
         item['options'] = options
-    # ----------------------------------------
 
     if request.method == 'POST':
         friend_name = request.form.get('friend_name', '').strip()
         if not friend_name:
-            flash('Please enter your name!', 'error')
+            flash('Please enter your name! 🤡', 'error')
             return redirect(url_for('take_quiz', quiz_id=quiz_id))
 
         score = 0
@@ -163,7 +137,7 @@ def take_quiz(quiz_id):
         
         for index, item in enumerate(quiz_data):
             friend_ans = request.form.get(f'ans_{index}')
-            if friend_ans and friend_ans.lower().strip() == item['answer']:
+            if friend_ans and friend_ans.strip().lower() == item['answer'].strip().lower():
                 score += 1
 
         db.execute('INSERT INTO submissions (quiz_id, friend_name, score, max_score) VALUES (?, ?, ?, ?)',
