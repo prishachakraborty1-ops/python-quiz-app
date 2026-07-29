@@ -8,9 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
   
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; }
 
     :root {
       --primary: #ff4757;
@@ -25,7 +23,7 @@
       animation: gradientBG 12s ease infinite;
       color: var(--text);
       margin: 0;
-      padding: 40px 20px;
+      padding: 40px 20px 80px 20px; /* নিচের ব্যাজটির জন্য জায়গা রাখা হলো */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -84,32 +82,58 @@
     
     .scoreboard-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     .scoreboard-table th, .scoreboard-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-    .table-container { overflow-x: auto; } 
+
+    /* =========================================
+       আপনার নিজস্ব ক্রিয়েটর ব্যাজ (Creator Badge)
+       ========================================= */
+    .creator-badge {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      color: var(--primary);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border: 2px dashed var(--secondary);
+      z-index: 1000;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+    
+    .creator-badge strong {
+      color: var(--secondary);
+    }
+
+    .creator-badge:hover {
+      transform: scale(1.05) translateY(-5px);
+      background: var(--primary);
+      color: white;
+      border-color: white;
+    }
+    
+    .creator-badge:hover strong {
+      color: #ffeaa7;
+    }
+
+    /* মোবাইলের জন্য রেসপন্সিভ ডিজাইন */
     @media (max-width: 600px) {
-      body {
-        padding: 15px 10px;
+      body { padding: 15px 10px 70px 10px; }
+      .container { padding: 25px 15px; border-width: 3px; border-radius: 18px; }
+      h1, h2 { font-size: 1.7rem; }
+      .creator-badge {
+        bottom: 15px;
+        right: 50%;
+        transform: translateX(50%);
+        width: max-content;
+        font-size: 0.85rem;
+        padding: 10px 20px;
       }
-      .container {
-        padding: 25px 15px; 
-        border-width: 3px; 
-        border-radius: 18px;
-      }
-      h1, h2 {
-        font-size: 1.7rem;
-      }
-      p {
-        font-size: 1rem;
-      }
-      .btn {
-        padding: 14px;
-        font-size: 1.1rem;
-      }
-      .mcq-option {
-        padding: 12px;
-        font-size: 1rem;
-      }
-      input[type="text"] {
-        padding: 12px;
+      .creator-badge:hover {
+        transform: translateX(50%) scale(1.05);
       }
     }
   </style>
@@ -125,6 +149,11 @@
     {% endwith %}
     
     {% block content %}{% endblock %}
+  </div>
+
+  <!-- আপনার পার্সোনাল সিগনেচার -->
+  <div class="creator-badge">
+    Developed with 💻 & 💖 by <strong>Prisha Chakraborty</strong>
   </div>
 </body>
 </html>
